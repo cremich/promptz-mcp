@@ -47,25 +47,6 @@ export const LIST_PROMPTS_QUERY = `
   }
 `;
 
-export const SEARCH_PROMPTS_QUERY = `
-  query SearchPrompts($filter: ModelPromptFilterInput, $limit: Int, $nextToken: String) {
-    listPrompts(filter: $filter, limit: $limit, nextToken: $nextToken) {
-      items {
-        id
-        name
-        description
-        tags
-        instruction
-        public
-        owner_username
-        createdAt
-        updatedAt
-      }
-      nextToken
-    }
-  }
-`;
-
 export const GET_PROMPT_QUERY = `
   query GetPrompt($id: ID!) {
     getPrompt(id: $id) {
@@ -125,7 +106,7 @@ export async function listPrompts(limit?: number, nextToken?: string): Promise<L
   }
 }
 
-export async function searchPrompts(query: string, limit?: number): Promise<ListPromptsResponse> {
+export async function searchPrompts(query: string): Promise<ListPromptsResponse> {
   try {
     console.error("[API] Searching prompts with query:", query);
 
@@ -136,9 +117,9 @@ export async function searchPrompts(query: string, limit?: number): Promise<List
     };
 
     // Build query filter
-    filter.or = buildTextSearchFilter(query).or;
+    filter.and = buildTextSearchFilter(query);
 
-    return await graphqlClient.request<ListPromptsResponse>(SEARCH_PROMPTS_QUERY, { filter, limit });
+    return await graphqlClient.request<ListPromptsResponse>(LIST_PROMPTS_QUERY, { filter });
   } catch (error) {
     console.error("[Error] Failed to search prompts:", error);
     throw new Error(`Failed to search prompts: ${error instanceof Error ? error.message : String(error)}`);
@@ -160,8 +141,11 @@ export async function getPromptByName(name: string): Promise<Prompt | null> {
     console.error("[API] Getting prompt by name:", name);
 
     // Search for prompts with the exact name
-    const filter = { name: { eq: name } };
-    const response = await graphqlClient.request<ListPromptsResponse>(SEARCH_PROMPTS_QUERY, { filter });
+    const filter: FilterCondition = {
+      public: { eq: true },
+    };
+    filter.and = { name: { eq: name } };
+    const response = await graphqlClient.request<ListPromptsResponse>(LIST_PROMPTS_QUERY, { filter });
 
     const prompts = response.listPrompts.items;
     if (prompts.length === 0) {

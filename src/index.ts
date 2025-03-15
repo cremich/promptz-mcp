@@ -66,10 +66,6 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
               type: "string",
               description: "Search term to look for in prompt name, description, or tags",
             },
-            limit: {
-              type: "number",
-              description: "Maximum number of prompts to return (default: 10)",
-            },
           },
           required: ["query"],
         },
@@ -150,13 +146,12 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 
       case "promptz/search": {
         const query = String(request.params.arguments?.query);
-        const limit = request.params.arguments?.limit as number | undefined;
 
         if (!query) {
           throw new Error("Search query is required");
         }
 
-        const response = await searchPrompts(query, limit);
+        const response = await searchPrompts(query);
         const prompts = response.listPrompts.items;
 
         if (prompts.length === 0) {
