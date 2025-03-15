@@ -1,5 +1,7 @@
 import { GraphQLClient } from "graphql-request";
 
+type FilterCondition = Record<string, unknown>;
+
 // GraphQL client configuration using environment variables
 const API_URL = process.env.PROMPTZ_API_URL;
 const API_KEY = process.env.PROMPTZ_API_KEY;
@@ -106,36 +108,6 @@ export async function listPrompts(limit?: number, nextToken?: string): Promise<L
   }
 }
 
-export async function searchPrompts(query: string): Promise<ListPromptsResponse> {
-  try {
-    console.error("[API] Searching prompts with query:", query);
-
-    // Create filter for searching in name, description, or tags
-    // Base filter
-    const filter: FilterCondition = {
-      public: { eq: true },
-    };
-
-    // Build query filter
-    filter.and = buildTextSearchFilter(query);
-
-    return await graphqlClient.request<ListPromptsResponse>(LIST_PROMPTS_QUERY, { filter });
-  } catch (error) {
-    console.error("[Error] Failed to search prompts:", error);
-    throw new Error(`Failed to search prompts: ${error instanceof Error ? error.message : String(error)}`);
-  }
-}
-
-export async function getPromptById(id: string): Promise<GetPromptResponse> {
-  try {
-    console.error("[API] Getting prompt by ID:", id);
-    return await graphqlClient.request<GetPromptResponse>(GET_PROMPT_QUERY, { id });
-  } catch (error) {
-    console.error("[Error] Failed to get prompt:", error);
-    throw new Error(`Failed to get prompt: ${error instanceof Error ? error.message : String(error)}`);
-  }
-}
-
 export async function getPromptByName(name: string): Promise<Prompt | null> {
   try {
     console.error("[API] Getting prompt by name:", name);
@@ -157,18 +129,4 @@ export async function getPromptByName(name: string): Promise<Prompt | null> {
     console.error("[Error] Failed to get prompt by name:", error);
     throw new Error(`Failed to get prompt by name: ${error instanceof Error ? error.message : String(error)}`);
   }
-}
-
-function getCaseVariations(text: string): string[] {
-  return [text.toLowerCase(), text.toUpperCase(), text.charAt(0).toUpperCase() + text.slice(1).toLowerCase()];
-}
-
-type FilterCondition = Record<string, unknown>;
-
-// Handle text search conditions
-function buildTextSearchFilter(query: string): FilterCondition {
-  const variations = getCaseVariations(query);
-  return {
-    or: variations.flatMap((variant) => [{ name: { contains: variant } }, { description: { contains: variant } }]),
-  };
 }
