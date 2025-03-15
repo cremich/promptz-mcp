@@ -1,0 +1,516 @@
+input AmplifyAIConversationTurnErrorInput {
+  errorType: String!
+  message: String!
+}
+
+input CreatePromptInput {
+  id: ID
+  name: String!
+  description: String!
+  tags: [String]
+  instruction: String!
+  sourceURL: String
+  howto: String
+  public: Boolean
+  owner_username: String!
+}
+
+input CreateStarsInput {
+  userId: String!
+  promptId: String!
+}
+
+input CreateUserInput {
+  id: ID
+  username: String!
+  email: String!
+  displayName: String!
+  owner: String!
+}
+
+input DeletePromptInput {
+  id: ID!
+}
+
+input DeleteStarsInput {
+  userId: String!
+  promptId: String!
+}
+
+input DeleteUserInput {
+  id: ID!
+}
+
+enum ModelAttributeTypes {
+  binary
+  binarySet
+  bool
+  list
+  map
+  number
+  numberSet
+  string
+  stringSet
+  _null
+}
+
+input ModelBooleanInput {
+  ne: Boolean
+  eq: Boolean
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+}
+
+input ModelFloatInput {
+  ne: Float
+  eq: Float
+  le: Float
+  lt: Float
+  ge: Float
+  gt: Float
+  between: [Float]
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+}
+
+input ModelIDInput {
+  ne: ID
+  eq: ID
+  le: ID
+  lt: ID
+  ge: ID
+  gt: ID
+  contains: ID
+  notContains: ID
+  between: [ID]
+  beginsWith: ID
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+  size: ModelSizeInput
+}
+
+input ModelIntInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+}
+
+input ModelPromptConditionInput {
+  name: ModelStringInput
+  description: ModelStringInput
+  tags: ModelStringInput
+  instruction: ModelStringInput
+  sourceURL: ModelStringInput
+  howto: ModelStringInput
+  public: ModelBooleanInput
+  owner_username: ModelStringInput
+  and: [ModelPromptConditionInput]
+  or: [ModelPromptConditionInput]
+  not: ModelPromptConditionInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
+  owner: ModelStringInput
+}
+
+type ModelPromptConnection @aws_api_key @aws_iam @aws_cognito_user_pools {
+  items: [prompt]!
+  nextToken: String
+}
+
+input ModelPromptFilterInput {
+  id: ModelIDInput
+  name: ModelStringInput
+  description: ModelStringInput
+  tags: ModelStringInput
+  instruction: ModelStringInput
+  sourceURL: ModelStringInput
+  howto: ModelStringInput
+  public: ModelBooleanInput
+  owner_username: ModelStringInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
+  and: [ModelPromptFilterInput]
+  or: [ModelPromptFilterInput]
+  not: ModelPromptFilterInput
+  owner: ModelStringInput
+}
+
+input ModelSizeInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
+}
+
+enum ModelSortDirection {
+  ASC
+  DESC
+}
+
+input ModelStarsConditionInput {
+  userId: ModelStringInput
+  promptId: ModelStringInput
+  and: [ModelStarsConditionInput]
+  or: [ModelStarsConditionInput]
+  not: ModelStarsConditionInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
+  owner: ModelStringInput
+}
+
+type ModelStarsConnection @aws_iam @aws_cognito_user_pools {
+  items: [stars]!
+  nextToken: String
+}
+
+input ModelStarsFilterInput {
+  userId: ModelStringInput
+  promptId: ModelStringInput
+  id: ModelIDInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
+  and: [ModelStarsFilterInput]
+  or: [ModelStarsFilterInput]
+  not: ModelStarsFilterInput
+  owner: ModelStringInput
+}
+
+input ModelStringInput {
+  ne: String
+  eq: String
+  le: String
+  lt: String
+  ge: String
+  gt: String
+  contains: String
+  notContains: String
+  between: [String]
+  beginsWith: String
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+  size: ModelSizeInput
+}
+
+input ModelStringKeyConditionInput {
+  eq: String
+  le: String
+  lt: String
+  ge: String
+  gt: String
+  between: [String]
+  beginsWith: String
+}
+
+input ModelSubscriptionBooleanInput {
+  ne: Boolean
+  eq: Boolean
+}
+
+input ModelSubscriptionFloatInput {
+  ne: Float
+  eq: Float
+  le: Float
+  lt: Float
+  ge: Float
+  gt: Float
+  between: [Float]
+  in: [Float]
+  notIn: [Float]
+}
+
+input ModelSubscriptionIDInput {
+  ne: ID
+  eq: ID
+  le: ID
+  lt: ID
+  ge: ID
+  gt: ID
+  contains: ID
+  notContains: ID
+  between: [ID]
+  beginsWith: ID
+  in: [ID]
+  notIn: [ID]
+}
+
+input ModelSubscriptionIntInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
+  in: [Int]
+  notIn: [Int]
+}
+
+input ModelSubscriptionPromptFilterInput {
+  id: ModelSubscriptionIDInput
+  name: ModelSubscriptionStringInput
+  description: ModelSubscriptionStringInput
+  tags: ModelSubscriptionStringInput
+  instruction: ModelSubscriptionStringInput
+  sourceURL: ModelSubscriptionStringInput
+  howto: ModelSubscriptionStringInput
+  public: ModelSubscriptionBooleanInput
+  owner_username: ModelSubscriptionStringInput
+  createdAt: ModelSubscriptionStringInput
+  updatedAt: ModelSubscriptionStringInput
+  and: [ModelSubscriptionPromptFilterInput]
+  or: [ModelSubscriptionPromptFilterInput]
+  owner: ModelStringInput
+}
+
+input ModelSubscriptionStarsFilterInput {
+  userId: ModelSubscriptionStringInput
+  promptId: ModelSubscriptionStringInput
+  id: ModelSubscriptionIDInput
+  createdAt: ModelSubscriptionStringInput
+  updatedAt: ModelSubscriptionStringInput
+  and: [ModelSubscriptionStarsFilterInput]
+  or: [ModelSubscriptionStarsFilterInput]
+  owner: ModelStringInput
+}
+
+input ModelSubscriptionStringInput {
+  ne: String
+  eq: String
+  le: String
+  lt: String
+  ge: String
+  gt: String
+  contains: String
+  notContains: String
+  between: [String]
+  beginsWith: String
+  in: [String]
+  notIn: [String]
+}
+
+input ModelSubscriptionUserFilterInput {
+  id: ModelSubscriptionIDInput
+  username: ModelSubscriptionStringInput
+  email: ModelSubscriptionStringInput
+  displayName: ModelSubscriptionStringInput
+  createdAt: ModelSubscriptionStringInput
+  updatedAt: ModelSubscriptionStringInput
+  and: [ModelSubscriptionUserFilterInput]
+  or: [ModelSubscriptionUserFilterInput]
+  owner: ModelStringInput
+}
+
+input ModelUserConditionInput {
+  username: ModelStringInput
+  email: ModelStringInput
+  displayName: ModelStringInput
+  owner: ModelStringInput
+  and: [ModelUserConditionInput]
+  or: [ModelUserConditionInput]
+  not: ModelUserConditionInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
+}
+
+type ModelUserConnection @aws_iam @aws_cognito_user_pools {
+  items: [user]!
+  nextToken: String
+}
+
+input ModelUserFilterInput {
+  id: ModelIDInput
+  username: ModelStringInput
+  email: ModelStringInput
+  displayName: ModelStringInput
+  owner: ModelStringInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
+  and: [ModelUserFilterInput]
+  or: [ModelUserFilterInput]
+  not: ModelUserFilterInput
+}
+
+type ModelstarsConnection @aws_iam @aws_cognito_user_pools @aws_api_key {
+  items: [stars]!
+  nextToken: String
+}
+
+input ModelstarsFilterInput {
+  userId: ModelStringInput
+  promptId: ModelStringInput
+  and: [ModelstarsFilterInput]
+  or: [ModelstarsFilterInput]
+  not: ModelstarsFilterInput
+}
+
+input UpdatePromptInput {
+  id: ID!
+  name: String
+  description: String
+  tags: [String]
+  instruction: String
+  sourceURL: String
+  howto: String
+  public: Boolean
+  owner_username: String
+}
+
+input UpdateStarsInput {
+  userId: String!
+  promptId: String!
+}
+
+input UpdateUserInput {
+  id: ID!
+  username: String
+  email: String
+  displayName: String
+  owner: String
+}
+
+type prompt @aws_iam @aws_cognito_user_pools @aws_api_key {
+  id: ID!
+  name: String!
+  description: String!
+  tags: [String]
+  instruction: String!
+  sourceURL: String
+  howto: String
+  public: Boolean
+  owner_username: String!
+  stars(
+    filter: ModelstarsFilterInput
+    sortDirection: ModelSortDirection
+    limit: Int
+    nextToken: String
+  ): ModelstarsConnection
+  createdAt: AWSDateTime!
+  updatedAt: AWSDateTime!
+  owner: String
+}
+
+type stars @aws_iam @aws_cognito_user_pools @aws_api_key {
+  userId: String!
+  promptId: String!
+  user: user
+  prompt: prompt
+  createdAt: AWSDateTime!
+  updatedAt: AWSDateTime!
+  owner: String
+}
+
+type user @aws_iam @aws_cognito_user_pools @aws_api_key {
+  id: ID!
+  username: String!
+  email: String!
+  displayName: String!
+  owner: String!
+  stars(
+    filter: ModelstarsFilterInput
+    sortDirection: ModelSortDirection
+    limit: Int
+    nextToken: String
+  ): ModelstarsConnection
+  createdAt: AWSDateTime!
+  updatedAt: AWSDateTime!
+}
+
+type Mutation {
+  createUser(input: CreateUserInput!, condition: ModelUserConditionInput): user @aws_api_key @aws_iam
+  updateUser(input: UpdateUserInput!, condition: ModelUserConditionInput): user @aws_api_key @aws_iam
+  deleteUser(input: DeleteUserInput!, condition: ModelUserConditionInput): user @aws_api_key @aws_iam
+  createPrompt(input: CreatePromptInput!, condition: ModelPromptConditionInput): prompt
+    @aws_api_key
+    @aws_iam
+    @aws_cognito_user_pools
+  updatePrompt(input: UpdatePromptInput!, condition: ModelPromptConditionInput): prompt
+    @aws_api_key
+    @aws_iam
+    @aws_cognito_user_pools
+  deletePrompt(input: DeletePromptInput!, condition: ModelPromptConditionInput): prompt
+    @aws_api_key
+    @aws_iam
+    @aws_cognito_user_pools
+  createStars(input: CreateStarsInput!, condition: ModelStarsConditionInput): stars @aws_iam @aws_cognito_user_pools
+  updateStars(input: UpdateStarsInput!, condition: ModelStarsConditionInput): stars @aws_api_key @aws_iam
+  deleteStars(input: DeleteStarsInput!, condition: ModelStarsConditionInput): stars @aws_iam @aws_cognito_user_pools
+}
+
+type Query {
+  getUser(id: ID!): user @aws_iam @aws_cognito_user_pools
+  listUsers(
+    id: ID
+    filter: ModelUserFilterInput
+    limit: Int
+    nextToken: String
+    sortDirection: ModelSortDirection
+  ): ModelUserConnection @aws_iam @aws_cognito_user_pools
+  getPrompt(id: ID!): prompt @aws_api_key @aws_iam @aws_cognito_user_pools
+  listPrompts(
+    id: ID
+    filter: ModelPromptFilterInput
+    limit: Int
+    nextToken: String
+    sortDirection: ModelSortDirection
+  ): ModelPromptConnection @aws_api_key @aws_iam @aws_cognito_user_pools
+  getStars(userId: String!, promptId: String!): stars @aws_iam @aws_cognito_user_pools
+  listStars(
+    userId: String
+    promptId: ModelStringKeyConditionInput
+    filter: ModelStarsFilterInput
+    limit: Int
+    nextToken: String
+    sortDirection: ModelSortDirection
+  ): ModelStarsConnection @aws_iam @aws_cognito_user_pools
+}
+
+type Subscription {
+  onCreateUser(filter: ModelSubscriptionUserFilterInput, owner: String): user
+    @aws_subscribe(mutations: ["createUser"])
+    @aws_iam
+    @aws_cognito_user_pools
+  onUpdateUser(filter: ModelSubscriptionUserFilterInput, owner: String): user
+    @aws_subscribe(mutations: ["updateUser"])
+    @aws_iam
+    @aws_cognito_user_pools
+  onDeleteUser(filter: ModelSubscriptionUserFilterInput, owner: String): user
+    @aws_subscribe(mutations: ["deleteUser"])
+    @aws_iam
+    @aws_cognito_user_pools
+  onCreatePrompt(filter: ModelSubscriptionPromptFilterInput): prompt
+    @aws_subscribe(mutations: ["createPrompt"])
+    @aws_api_key
+    @aws_iam
+    @aws_cognito_user_pools
+  onUpdatePrompt(filter: ModelSubscriptionPromptFilterInput): prompt
+    @aws_subscribe(mutations: ["updatePrompt"])
+    @aws_api_key
+    @aws_iam
+    @aws_cognito_user_pools
+  onDeletePrompt(filter: ModelSubscriptionPromptFilterInput): prompt
+    @aws_subscribe(mutations: ["deletePrompt"])
+    @aws_api_key
+    @aws_iam
+    @aws_cognito_user_pools
+  onCreateStars(filter: ModelSubscriptionStarsFilterInput, owner: String): stars
+    @aws_subscribe(mutations: ["createStars"])
+    @aws_iam
+    @aws_cognito_user_pools
+  onUpdateStars(filter: ModelSubscriptionStarsFilterInput, owner: String): stars
+    @aws_subscribe(mutations: ["updateStars"])
+    @aws_iam
+    @aws_cognito_user_pools
+  onDeleteStars(filter: ModelSubscriptionStarsFilterInput, owner: String): stars
+    @aws_subscribe(mutations: ["deleteStars"])
+    @aws_iam
+    @aws_cognito_user_pools
+}
