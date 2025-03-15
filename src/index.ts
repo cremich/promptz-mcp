@@ -1,7 +1,12 @@
 #!/usr/bin/env node
 import { Server } from "@modelcontextprotocol/sdk/server/index.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
-import { GetPromptRequestSchema, ListPromptsRequestSchema } from "@modelcontextprotocol/sdk/types.js";
+import {
+  CallToolRequestSchema,
+  GetPromptRequestSchema,
+  ListPromptsRequestSchema,
+  ListToolsRequestSchema,
+} from "@modelcontextprotocol/sdk/types.js";
 
 // Import GraphQL client functions
 import { listPrompts, getPromptByName, Prompt } from "./graphql-client.js";
@@ -17,92 +22,143 @@ const server = new Server(
   {
     capabilities: {
       prompts: {},
+      tools: {},
     },
   }
 );
 
-//     tools: [
-//       {
-//         name: "promptz/list",
-//         description: "List available prompts from promptz.dev",
-//         inputSchema: {
-//           type: "object",
-//           properties: {
-//             limit: {
-//               type: "number",
-//               description: "Maximum number of prompts to return (default: 10)",
-//             },
-//             nextToken: {
-//               type: "string",
-//               description: "Pagination token for fetching the next set of results",
-//             },
-//           },
-//         },
-//       },
-//       {
-//         name: "promptz/search",
-//         description: "Search for prompts by name, description, or tags",
-//         inputSchema: {
-//           type: "object",
-//           properties: {
-//             query: {
-//               type: "string",
-//               description: "Search term to look for in prompt name, description, or tags",
-//             },
-//           },
-//           required: ["query"],
-//         },
-//       },
-//       {
-//         name: "promptz/get",
-//         description: "Get a specific prompt by ID or name",
-//         inputSchema: {
-//           type: "object",
-//           properties: {
-//             id: {
-//               type: "string",
-//               description: "ID of the prompt to retrieve",
-//             },
-//             name: {
-//               type: "string",
-//               description: "Name of the prompt to retrieve",
-//             },
-//           },
-//           oneOf: [{ required: ["id"] }, { required: ["name"] }],
-//         },
-//       },
-//     ],
-//   };
-// });
+/**
+ * Handler that lists available tools.
+ * Exposes tools for listing prompts, searching prompts, and getting a specific prompt.
+ */
+server.setRequestHandler(ListToolsRequestSchema, async () => {
+  return {
+    tools: [
+      {
+        name: "list_prompts",
+        description: "List available prompts from promptz.dev",
+        inputSchema: {
+          type: "object",
+          properties: {
+            cursor: {
+              type: "string",
+              description: "Pagination token for fetching the next set of results",
+            },
+          },
+        },
+      },
+      {
+        name: "get_prompt",
+        description: "Get a specific prompt by ID or name",
+        inputSchema: {
+          type: "object",
+          properties: {
+            name: {
+              type: "string",
+              description: "Name of the prompt to retrieve",
+            },
+          },
+        },
+      },
+    ],
+  };
+});
+
+/**
+ * Handler for tool execution.
+ * Implements the promptz/list, promptz/search, and promptz/get tools.
+ */
+server.setRequestHandler(CallToolRequestSchema, async (request) => {
+  try {
+    switch (request.params.name) {
+      case "list_prompts": {
+        const nextToken = request.params.arguments?.nextToken as string | undefined;
+        const response = await listPrompts(nextToken);
+        const prompts = response.listPrompts.items;
+
+        const result = {
+          prompts: prompts.map((prompt) => ({
+            name: prompt.name,
+            description: prompt.description,
+          })),
+          nextCursor: response.listPrompts.nextToken || undefined,
+        };
+
+        return {
+          content: [
+            {
+              type: "text",
+              text: JSON.stringify(result, null, 2),
+            },
+          ],
+        };
+      }
+
+      case "get_prompt": {
+        const name = request.params.arguments?.name as string | undefined;
+
+        if (!name) {
+          throw new Error("Either prompt ID or name is required");
+        }
+
+        let prompt: Prompt | null = null;
+        prompt = await getPromptByName(name);
+
+        if (!prompt) {
+          return {
+            content: [
+              {
+                type: "text",
+                text: `Prompt not found: ${name}`,
+              },
+            ],
+          };
+        }
+
+        return {
+          content: [
+            {
+              type: "text",
+              text: prompt.instruction,
+            },
+          ],
+        };
+      }
+
+      default:
+        throw new Error("Unknown tool");
+    }
+  } catch (error) {
+    console.error("[Error] Tool execution failed:", error);
+    return {
+      isError: true,
+      content: [
+        {
+          type: "text",
+          text: `Error: ${error instanceof Error ? error.message : String(error)}`,
+        },
+      ],
+    };
+  }
+});
 
 /**
  * Handler that lists available prompts.
  * Exposes prompts from promptz.dev as MCP prompt templates.
  */
-server.setRequestHandler(ListPromptsRequestSchema, async () => {
+server.setRequestHandler(ListPromptsRequestSchema, async (request) => {
   try {
     console.error("[API] Listing available prompts");
-    let cursor: string | undefined;
-    let hasMorePages: boolean = true;
-    const prompts = [];
-
-    do {
-      const response = await listPrompts(10, cursor);
-      const p = response.listPrompts.items;
-      prompts.push(...p);
-
-      if (response.listPrompts.nextToken) {
-        cursor = response.listPrompts.nextToken;
-      } else {
-        hasMorePages = false;
-      }
-    } while (hasMorePages);
+    let cursor = request.params?.cursor;
+    const response = await listPrompts(cursor);
+    const p = response.listPrompts.items;
 
     return {
-      prompts: prompts.map((prompt) => ({
+      prompts: p.map((prompt) => ({
         name: prompt.name,
         description: prompt.description,
       })),
+      nextCursor: response.listPrompts.nextToken || undefined,
     };
   } catch (error) {
     console.error("[Error] Failed to list prompts:", error);

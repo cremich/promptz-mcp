@@ -31,6 +31,25 @@ export const graphqlClient = new GraphQLClient(API_URL, {
 
 // GraphQL queries
 export const LIST_PROMPTS_QUERY = `
+  query ListPrompts($nextToken: String) {
+    listPrompts(nextToken: $nextToken) {
+      items {
+        id
+        name
+        description
+        tags
+        instruction
+        public
+        owner_username
+        createdAt
+        updatedAt
+      }
+      nextToken
+    }
+  }
+`;
+
+export const GET_PROMPT_BY_FILTER = `
   query ListPrompts($filter: ModelPromptFilterInput, $limit: Int, $nextToken: String) {
     listPrompts(filter: $filter, limit: $limit, nextToken: $nextToken) {
       items {
@@ -94,14 +113,16 @@ export interface GetPromptResponse {
 }
 
 // API functions
-export async function listPrompts(limit?: number, nextToken?: string): Promise<ListPromptsResponse> {
+export async function listPrompts(nextToken?: string): Promise<ListPromptsResponse> {
   try {
     console.error("[API] Listing prompts");
-    const filter: FilterCondition = {
-      public: { eq: true },
+    const response = await graphqlClient.request<ListPromptsResponse>(LIST_PROMPTS_QUERY, { nextToken });
+    return {
+      listPrompts: {
+        items: response.listPrompts.items.filter((p) => p.public === true),
+        nextToken: response.listPrompts.nextToken,
+      },
     };
-
-    return await graphqlClient.request<ListPromptsResponse>(LIST_PROMPTS_QUERY, { filter, limit, nextToken });
   } catch (error) {
     console.error("[Error] Failed to list prompts:", error);
     throw new Error(`Failed to list prompts: ${error instanceof Error ? error.message : String(error)}`);
@@ -117,7 +138,7 @@ export async function getPromptByName(name: string): Promise<Prompt | null> {
       public: { eq: true },
     };
     filter.and = { name: { eq: name } };
-    const response = await graphqlClient.request<ListPromptsResponse>(LIST_PROMPTS_QUERY, { filter });
+    const response = await graphqlClient.request<ListPromptsResponse>(GET_PROMPT_BY_FILTER, { filter });
 
     const prompts = response.listPrompts.items;
     if (prompts.length === 0) {
