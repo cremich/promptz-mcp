@@ -1,6 +1,6 @@
 // Types for API responses
 export interface Prompt {
-  id: string;
+  id?: string;
   name: string;
   description: string;
   tags?: string[];
@@ -8,9 +8,9 @@ export interface Prompt {
   sourceURL?: string;
   howto?: string;
   public?: boolean;
-  owner_username: string;
-  createdAt: string;
-  updatedAt: string;
+  owner_username?: string;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface ListPromptsResponse {

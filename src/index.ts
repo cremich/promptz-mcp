@@ -12,6 +12,7 @@ import {
 // Import GraphQL client functions
 import { listPrompts, getPromptByName } from "./graphql-client.js";
 import { Prompt } from "./definitions.js";
+import { toMCPPrompt, toMCPPromptMessage } from "./formatter.js";
 
 /**
  * Create an MCP server with prompts capability for interacting with promptz.dev API
@@ -156,10 +157,7 @@ server.setRequestHandler(ListPromptsRequestSchema, async (request) => {
     const p = response.listPrompts.items;
 
     return {
-      prompts: p.map((prompt) => ({
-        name: prompt.name,
-        description: prompt.description,
-      })),
+      prompts: p.map((prompt) => toMCPPrompt(prompt)),
       nextCursor: response.listPrompts.nextToken || undefined,
     };
   } catch (error) {
@@ -185,20 +183,9 @@ server.setRequestHandler(GetPromptRequestSchema, async (request) => {
       throw new Error(`Prompt not found: ${request.params.name}`);
     }
 
-    // Process any arguments provided in the request
-    let instruction = prompt.instruction;
-
     // Convert the prompt to MCP prompt template format
     return {
-      messages: [
-        {
-          role: "user",
-          content: {
-            type: "text",
-            text: instruction,
-          },
-        },
-      ],
+      messages: [toMCPPromptMessage(prompt)],
       description: prompt.description,
     };
   } catch (error) {
