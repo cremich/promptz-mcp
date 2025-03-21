@@ -1,4 +1,6 @@
 import { GraphQLClient } from "graphql-request";
+import { ListPromptsResponse, GetPromptResponse, Prompt } from "./definitions.js";
+import { LIST_PROMPTS_QUERY, GET_PROMPT_BY_NAME } from "./queries.js";
 
 // GraphQL client configuration using environment variables
 const API_URL = process.env.PROMPTZ_API_URL;
@@ -26,61 +28,6 @@ export const graphqlClient = new GraphQLClient(API_URL, {
     "x-api-key": API_KEY,
   },
 });
-
-// GraphQL queries
-export const LIST_PROMPTS_QUERY = `
-  query ListPrompts($nextToken: String) {
-    listPrompts(nextToken: $nextToken) {
-      items {
-        name
-        description
-        instruction
-        public
-      }
-      nextToken
-    }
-  }
-`;
-
-export const GET_PROMPT_BY_NAME = `
-  query GetPromptByName($name: String!) {
-    listByName(name: $name) {
-      items {
-        name
-        description
-        instruction
-      }
-    }
-  }
-`;
-
-// Types for API responses
-export interface Prompt {
-  id: string;
-  name: string;
-  description: string;
-  tags?: string[];
-  instruction: string;
-  sourceURL?: string;
-  howto?: string;
-  public?: boolean;
-  owner_username: string;
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface ListPromptsResponse {
-  listPrompts: {
-    items: Prompt[];
-    nextToken?: string;
-  };
-}
-
-export interface GetPromptResponse {
-  listByName: {
-    items: Prompt[];
-  };
-}
 
 // API functions
 export async function listPrompts(nextToken?: string): Promise<ListPromptsResponse> {

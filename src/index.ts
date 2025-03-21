@@ -9,7 +9,8 @@ import {
 } from "@modelcontextprotocol/sdk/types.js";
 
 // Import GraphQL client functions
-import { listPrompts, getPromptByName, Prompt } from "./graphql-client.js";
+import { listPrompts, getPromptByName } from "./graphql-client.js";
+import { Prompt } from "./definitions.js";
 
 /**
  * Create an MCP server with prompts capability for interacting with promptz.dev API
