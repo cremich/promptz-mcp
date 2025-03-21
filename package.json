@@ -1,15 +1,20 @@
 {
-  "name": "promptz.dev",
+  "name": "@promptz/mcp",
   "version": "0.1.0",
-  "description": "Allows developer to access prompts via promptz.dev",
-  "private": true,
+  "description": "MCP server to give developers access to prompts from promptz.dev",
   "type": "module",
+  "author": "Christian Bonzelet",
+  "repository": "https://github.com/cremich/promptz-mcp",
+  "license": "MIT",
   "bin": {
-    "promptz.dev": "./build/index.js"
+    "promptz-mcp": "./build/index.js"
   },
   "files": [
     "build"
   ],
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "build": "tsc && chmod 755 build/index.js",
     "prepare": "husky",

@@ -50,7 +50,7 @@ On Windows: `%APPDATA%/Claude/claude_desktop_config.json`
   "mcpServers": {
     "promptz.dev": {
       "command": "npx",
-      "args": ["-y", "@promptz.dev/mcp"],
+      "args": ["-y", "@promptz/mcp"],
       "env": {
         "PROMPTZ_API_URL": "...",
         "PROMPTZ_API_KEY": "..."
