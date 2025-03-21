@@ -13,6 +13,8 @@ import {
 import { listPrompts, getPromptByName } from "./graphql-client.js";
 import { Prompt } from "./definitions.js";
 import { toMCPPrompt, toMCPPromptMessage } from "./formatter.js";
+import { getPromptToolHandler, listPromptsToolHandler } from "./tools.js";
+import { request } from "http";
 
 /**
  * Create an MCP server with prompts capability for interacting with promptz.dev API
@@ -69,65 +71,17 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 
 /**
  * Handler for tool execution.
- * Implements the promptz/list, promptz/search, and promptz/get tools.
+ * Implements the list_prompts and get_prompt tools.
  */
 server.setRequestHandler(CallToolRequestSchema, async (request) => {
   try {
     switch (request.params.name) {
       case "list_prompts": {
-        const nextToken = request.params.arguments?.nextToken as string | undefined;
-        const response = await listPrompts(nextToken);
-        const prompts = response.listPrompts.items;
-
-        const result = {
-          prompts: prompts.map((prompt) => ({
-            name: prompt.name,
-            description: prompt.description,
-          })),
-          nextCursor: response.listPrompts.nextToken || undefined,
-        };
-
-        return {
-          content: [
-            {
-              type: "text",
-              text: JSON.stringify(result, null, 2),
-            },
-          ],
-        };
+        return await listPromptsToolHandler(request);
       }
-
       case "get_prompt": {
-        const name = request.params.arguments?.name as string | undefined;
-
-        if (!name) {
-          throw new Error("Either prompt ID or name is required");
-        }
-
-        let prompt: Prompt | null = null;
-        prompt = await getPromptByName(name);
-
-        if (!prompt) {
-          return {
-            content: [
-              {
-                type: "text",
-                text: `Prompt not found: ${name}`,
-              },
-            ],
-          };
-        }
-
-        return {
-          content: [
-            {
-              type: "text",
-              text: prompt.instruction,
-            },
-          ],
-        };
+        return await getPromptToolHandler(request);
       }
-
       default:
         throw new Error("Unknown tool");
     }
