@@ -24,7 +24,7 @@ const server = new Server(
       prompts: {},
       tools: {},
     },
-  }
+  },
 );
 
 /**

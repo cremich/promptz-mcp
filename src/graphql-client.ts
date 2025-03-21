@@ -7,13 +7,13 @@ const API_KEY = process.env.PROMPTZ_API_KEY;
 // Validate environment variables
 if (!API_URL) {
   throw new Error(
-    "PROMPTZ_API_URL environment variable is not set. Please configure it in your MCP settings. You can get the required settings from https://promptz.dev/mcp"
+    "PROMPTZ_API_URL environment variable is not set. Please configure it in your MCP settings. You can get the required settings from https://promptz.dev/mcp",
   );
 }
 
 if (!API_KEY) {
   throw new Error(
-    "PROMPTZ_API_KEY environment variable is not set. Please configure it in your MCP settings. You can get the required settings from https://promptz.dev/mcp"
+    "PROMPTZ_API_KEY environment variable is not set. Please configure it in your MCP settings. You can get the required settings from https://promptz.dev/mcp",
   );
 }
 

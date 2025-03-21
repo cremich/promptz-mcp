@@ -12,9 +12,10 @@
   ],
   "scripts": {
     "build": "tsc && chmod 755 build/index.js",
-    "prepare": "npm run build",
+    "prepare": "husky",
     "watch": "tsc --watch",
-    "inspector": "npx @modelcontextprotocol/inspector build/index.js"
+    "inspector": "npx @modelcontextprotocol/inspector build/index.js",
+    "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,css,md}\""
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "0.6.0",
@@ -23,7 +24,12 @@
     "zod": "^3.24.2"
   },
   "devDependencies": {
+    "@commitlint/cli": "^19.8.0",
+    "@commitlint/config-conventional": "^19.8.0",
     "@types/node": "^20.11.24",
+    "husky": "^9.1.7",
+    "lint-staged": "^15.5.0",
+    "prettier": "^3.5.3",
     "typescript": "^5.3.3"
   }
 }

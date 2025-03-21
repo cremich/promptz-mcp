@@ -121,7 +121,7 @@ server.resource(
         text: `Profile data for user ${userId}`,
       },
     ],
-  })
+  }),
 );
 ```
 
@@ -144,7 +144,7 @@ server.tool(
         text: String(weightKg / (heightM * heightM)),
       },
     ],
-  })
+  }),
 );
 
 // Async tool with external API call
@@ -366,7 +366,7 @@ const server = new Server(
     capabilities: {
       prompts: {},
     },
-  }
+  },
 );
 
 server.setRequestHandler(ListPromptsRequestSchema, async () => {
@@ -433,7 +433,7 @@ const client = new Client(
       resources: {},
       tools: {},
     },
-  }
+  },
 );
 
 await client.connect(transport);
