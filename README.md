@@ -8,20 +8,15 @@ This MCP server allows developers to access prompts from the promptz.dev API wit
 
 ### Tools
 
-- `promptz/list` - List available prompts from promptz.dev
+- `list_prompts` - List available prompts from promptz.dev
 
-  - Optional parameters: `limit` (number of prompts to return), `nextToken` (pagination token)
+  - Optional parameters: `cursor` (pagination token)
   - Returns a list of prompts with their names and descriptions
 
-- `promptz/search` - Search for prompts by name, description, or tags
+- `get_prompt` - Get a specific prompt by name
 
-  - Required parameter: `query` (search term)
-  - Optional parameter: `limit` (number of prompts to return)
-  - Returns matching prompts with their names and descriptions
-
-- `promptz/get` - Get a specific prompt by ID or name
-  - Required parameter: either `id` or `name`
-  - Returns the complete prompt details including instruction, tags, and metadata
+  - Required parameter: `name`
+  - Returns the prompt
 
 ## Development
 
@@ -85,30 +80,9 @@ This server uses an API key to authenticate with the promptz.dev GraphQL API. Th
 
 You can get these credentials from [https://promptz.dev/mcp](https://promptz.dev/mcp).
 
-### Configuration
-
-When using with Claude Desktop or other MCP clients, add these environment variables to your configuration:
-
-```json
-{
-  "mcpServers": {
-    "promptz.dev": {
-      "command": "npx",
-      "args": ["-y", "@promptz.dev/mcp"],
-      "env": {
-        "PROMPTZ_API_URL": "...",
-        "PROMPTZ_API_KEY": "..."
-      }
-    }
-  }
-}
-```
-
-A sample configuration file is provided in `claude-desktop-config-sample.json`.
-
 ## Example Usage
 
-Once the server is connected to Claude Desktop or another MCP client, you can use it with natural language:
+Once the server is connected to your MCP client, you can use it with natural language:
 
 - "List available prompts from promptz.dev"
 - "Search for prompts about JavaScript"
@@ -116,6 +90,4 @@ Once the server is connected to Claude Desktop or another MCP client, you can us
 
 ## Security Considerations
 
-- The API key is configured using environment variables, which is more secure than hardcoding it in the source code.
-- Make sure to keep your API key confidential and do not share it publicly.
-- This server only provides read access to prompts and does not implement any write operations.
+This server only provides read access to prompts and does not implement any write operations.
