@@ -17,7 +17,6 @@
   },
   "scripts": {
     "build": "tsc && chmod 755 build/index.js",
-    "changeset": "changeset",
     "prepare": "husky",
     "watch": "tsc --watch",
     "inspector": "npx @modelcontextprotocol/inspector build/index.js",
@@ -34,7 +33,6 @@
     "zod": "^3.24.2"
   },
   "devDependencies": {
-    "@changesets/cli": "^2.28.1",
     "@commitlint/cli": "^19.8.0",
     "@commitlint/config-conventional": "^19.8.0",
     "@types/jest": "^29.5.14",
