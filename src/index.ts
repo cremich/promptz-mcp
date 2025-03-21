@@ -209,6 +209,13 @@ server.setRequestHandler(GetPromptRequestSchema, async (request) => {
  * This allows the server to communicate via standard input/output streams.
  */
 async function main() {
+  /*
+   * The MCP SDK's StdioServerTransport uses standard input/output streams (stdin/stdout) for JSON-RPC communication between the client and server:
+   *  - stdout (console.log) - Used for the actual JSON-RPC protocol messages
+   *  - stderr (console.error) - Used for logging and debugging information
+   * When you use console.log for logging, those messages are sent through stdout, which is the same channel used for the JSON-RPC protocol.
+   * The client then tries to parse your log messages as JSON, resulting in a syntax error "Error from MCP server: SyntaxError: Unexpected token ... is not valid JSON"
+   */
   console.error("[Setup] Initializing promptz.dev MCP server...");
   console.error("[Setup] Required environment variables:");
   console.error("[Setup] - PROMPTZ_API_URL: API URL for promptz.dev GraphQL API");

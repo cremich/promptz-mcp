@@ -1,7 +1,5 @@
 import { GraphQLClient } from "graphql-request";
 
-type FilterCondition = Record<string, unknown>;
-
 // GraphQL client configuration using environment variables
 const API_URL = process.env.PROMPTZ_API_URL;
 const API_KEY = process.env.PROMPTZ_API_KEY;
@@ -34,54 +32,24 @@ export const LIST_PROMPTS_QUERY = `
   query ListPrompts($nextToken: String) {
     listPrompts(nextToken: $nextToken) {
       items {
-        id
         name
         description
-        tags
         instruction
         public
-        owner_username
-        createdAt
-        updatedAt
       }
       nextToken
     }
   }
 `;
 
-export const GET_PROMPT_BY_FILTER = `
-  query ListPrompts($filter: ModelPromptFilterInput, $limit: Int, $nextToken: String) {
-    listPrompts(filter: $filter, limit: $limit, nextToken: $nextToken) {
+export const GET_PROMPT_BY_NAME = `
+  query GetPromptByName($name: String!) {
+    listByName(name: $name) {
       items {
-        id
         name
         description
-        tags
         instruction
-        public
-        owner_username
-        createdAt
-        updatedAt
       }
-      nextToken
-    }
-  }
-`;
-
-export const GET_PROMPT_QUERY = `
-  query GetPrompt($id: ID!) {
-    getPrompt(id: $id) {
-      id
-      name
-      description
-      tags
-      instruction
-      sourceURL
-      howto
-      public
-      owner_username
-      createdAt
-      updatedAt
     }
   }
 `;
@@ -109,7 +77,9 @@ export interface ListPromptsResponse {
 }
 
 export interface GetPromptResponse {
-  getPrompt: Prompt;
+  listByName: {
+    items: Prompt[];
+  };
 }
 
 // API functions
@@ -117,6 +87,7 @@ export async function listPrompts(nextToken?: string): Promise<ListPromptsRespon
   try {
     console.error("[API] Listing prompts");
     const response = await graphqlClient.request<ListPromptsResponse>(LIST_PROMPTS_QUERY, { nextToken });
+
     return {
       listPrompts: {
         items: response.listPrompts.items.filter((p) => p.public === true),
@@ -134,13 +105,9 @@ export async function getPromptByName(name: string): Promise<Prompt | null> {
     console.error("[API] Getting prompt by name:", name);
 
     // Search for prompts with the exact name
-    const filter: FilterCondition = {
-      public: { eq: true },
-    };
-    filter.and = { name: { eq: name } };
-    const response = await graphqlClient.request<ListPromptsResponse>(GET_PROMPT_BY_FILTER, { filter });
+    const response = await graphqlClient.request<GetPromptResponse>(GET_PROMPT_BY_NAME, { name });
 
-    const prompts = response.listPrompts.items;
+    const prompts = response.listByName.items;
     if (prompts.length === 0) {
       return null;
     }
