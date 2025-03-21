@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import { Server } from "@modelcontextprotocol/sdk/server/index.js";
+import { logger } from "./logger.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import {
   CallToolRequestSchema,
@@ -130,7 +131,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         throw new Error("Unknown tool");
     }
   } catch (error) {
-    console.error("[Error] Tool execution failed:", error);
+    logger.error(`[Error] Tool execution failed: ${error instanceof Error ? error.message : String(error)}`);
     return {
       isError: true,
       content: [
@@ -149,7 +150,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
  */
 server.setRequestHandler(ListPromptsRequestSchema, async (request) => {
   try {
-    console.error("[API] Listing available prompts");
+    logger.info("[API] Listing available prompts");
     let cursor = request.params?.cursor;
     const response = await listPrompts(cursor);
     const p = response.listPrompts.items;
@@ -162,7 +163,7 @@ server.setRequestHandler(ListPromptsRequestSchema, async (request) => {
       nextCursor: response.listPrompts.nextToken || undefined,
     };
   } catch (error) {
-    console.error("[Error] Failed to list prompts:", error);
+    logger.error(`[Error] Failed to list prompts: ${error instanceof Error ? error.message : String(error)}`);
     throw new Error(`Failed to list prompts: ${error instanceof Error ? error.message : String(error)}`);
   }
 });
@@ -173,7 +174,7 @@ server.setRequestHandler(ListPromptsRequestSchema, async (request) => {
  */
 server.setRequestHandler(GetPromptRequestSchema, async (request) => {
   try {
-    console.error("[API] Getting prompt:", request.params.name);
+    logger.info(`[API] Getting prompt: ${request.params.name}`);
 
     let prompt: Prompt | null = null;
 
@@ -201,7 +202,7 @@ server.setRequestHandler(GetPromptRequestSchema, async (request) => {
       description: prompt.description,
     };
   } catch (error) {
-    console.error("[Error] Failed to get prompt:", error);
+    logger.error(`[Error] Failed to get prompt: ${error instanceof Error ? error.message : String(error)}`);
     throw new Error(`Failed to get prompt: ${error instanceof Error ? error.message : String(error)}`);
   }
 });
@@ -210,25 +211,18 @@ server.setRequestHandler(GetPromptRequestSchema, async (request) => {
  * This allows the server to communicate via standard input/output streams.
  */
 async function main() {
-  /*
-   * The MCP SDK's StdioServerTransport uses standard input/output streams (stdin/stdout) for JSON-RPC communication between the client and server:
-   *  - stdout (console.log) - Used for the actual JSON-RPC protocol messages
-   *  - stderr (console.error) - Used for logging and debugging information
-   * When you use console.log for logging, those messages are sent through stdout, which is the same channel used for the JSON-RPC protocol.
-   * The client then tries to parse your log messages as JSON, resulting in a syntax error "Error from MCP server: SyntaxError: Unexpected token ... is not valid JSON"
-   */
-  console.error("[Setup] Initializing promptz.dev MCP server...");
-  console.error("[Setup] Required environment variables:");
-  console.error("[Setup] - PROMPTZ_API_URL: API URL for promptz.dev GraphQL API");
-  console.error("[Setup] - PROMPTZ_API_KEY: API Key for authentication");
-  console.error("[Setup] You can get these settings from https://promptz.dev/mcp");
+  logger.info("[Setup] Initializing promptz.dev MCP server...");
+  logger.info("[Setup] Required environment variables:");
+  logger.info("[Setup] - PROMPTZ_API_URL: API URL for promptz.dev GraphQL API");
+  logger.info("[Setup] - PROMPTZ_API_KEY: API Key for authentication");
+  logger.info("[Setup] You can get these settings from https://promptz.dev/mcp");
 
   const transport = new StdioServerTransport();
   await server.connect(transport);
-  console.error("[Setup] Server started successfully");
+  logger.info("[Setup] Server started successfully");
 }
 
 main().catch((error) => {
-  console.error("[Error] Server initialization failed:", error);
+  logger.error(`[Error] Server initialization failed: ${error instanceof Error ? error.message : String(error)}`);
   process.exit(1);
 });

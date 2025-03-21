@@ -1,4 +1,5 @@
 import { GraphQLClient } from "graphql-request";
+import { logger } from "./logger.js";
 import { ListPromptsResponse, GetPromptResponse, Prompt } from "./definitions.js";
 import { LIST_PROMPTS_QUERY, GET_PROMPT_BY_NAME } from "./queries.js";
 
@@ -19,8 +20,8 @@ if (!API_KEY) {
   );
 }
 
-console.error("[Config] Using API URL:", API_URL);
-console.error("[Config] API Key configured:", "Yes");
+logger.info(`[Config] Using API URL: ${API_URL}`);
+logger.info("[Config] API Key configured: Yes");
 
 // Create GraphQL client with API key authentication
 export const graphqlClient = new GraphQLClient(API_URL, {
@@ -32,7 +33,7 @@ export const graphqlClient = new GraphQLClient(API_URL, {
 // API functions
 export async function listPrompts(nextToken?: string): Promise<ListPromptsResponse> {
   try {
-    console.error("[API] Listing prompts");
+    logger.info("[API] Listing prompts");
     const response = await graphqlClient.request<ListPromptsResponse>(LIST_PROMPTS_QUERY, { nextToken });
 
     return {
@@ -42,14 +43,14 @@ export async function listPrompts(nextToken?: string): Promise<ListPromptsRespon
       },
     };
   } catch (error) {
-    console.error("[Error] Failed to list prompts:", error);
+    logger.error(`[Error] Failed to list prompts: ${error instanceof Error ? error.message : String(error)}`);
     throw new Error(`Failed to list prompts: ${error instanceof Error ? error.message : String(error)}`);
   }
 }
 
 export async function getPromptByName(name: string): Promise<Prompt | null> {
   try {
-    console.error("[API] Getting prompt by name:", name);
+    logger.info(`[API] Getting prompt by name: ${name}`);
 
     // Search for prompts with the exact name
     const response = await graphqlClient.request<GetPromptResponse>(GET_PROMPT_BY_NAME, { name });
@@ -61,7 +62,7 @@ export async function getPromptByName(name: string): Promise<Prompt | null> {
 
     return prompts[0];
   } catch (error) {
-    console.error("[Error] Failed to get prompt by name:", error);
+    logger.error(`[Error] Failed to get prompt by name: ${error instanceof Error ? error.message : String(error)}`);
     throw new Error(`Failed to get prompt by name: ${error instanceof Error ? error.message : String(error)}`);
   }
 }
