@@ -9,12 +9,8 @@ import {
   ListToolsRequestSchema,
 } from "@modelcontextprotocol/sdk/types.js";
 
-// Import GraphQL client functions
-import { listPrompts, getPromptByName } from "./graphql-client.js";
-import { Prompt } from "./definitions.js";
-import { toMCPPrompt, toMCPPromptMessage } from "./formatter.js";
 import { getPromptToolHandler, listPromptsToolHandler } from "./tools.js";
-import { request } from "http";
+import { getPromptHandler, listPromptsHandler } from "./prompts.js";
 
 /**
  * Create an MCP server with prompts capability for interacting with promptz.dev API
@@ -106,14 +102,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 server.setRequestHandler(ListPromptsRequestSchema, async (request) => {
   try {
     logger.info("[API] Listing available prompts");
-    let cursor = request.params?.cursor;
-    const response = await listPrompts(cursor);
-    const p = response.listPrompts.items;
-
-    return {
-      prompts: p.map((prompt) => toMCPPrompt(prompt)),
-      nextCursor: response.listPrompts.nextToken || undefined,
-    };
+    return await listPromptsHandler(request);
   } catch (error) {
     logger.error(`[Error] Failed to list prompts: ${error instanceof Error ? error.message : String(error)}`);
     throw new Error(`Failed to list prompts: ${error instanceof Error ? error.message : String(error)}`);
@@ -127,21 +116,7 @@ server.setRequestHandler(ListPromptsRequestSchema, async (request) => {
 server.setRequestHandler(GetPromptRequestSchema, async (request) => {
   try {
     logger.info(`[API] Getting prompt: ${request.params.name}`);
-
-    let prompt: Prompt | null = null;
-
-    // Try to get the prompt by name
-    prompt = await getPromptByName(request.params.name);
-
-    if (!prompt) {
-      throw new Error(`Prompt not found: ${request.params.name}`);
-    }
-
-    // Convert the prompt to MCP prompt template format
-    return {
-      messages: [toMCPPromptMessage(prompt)],
-      description: prompt.description,
-    };
+    return await getPromptHandler(request);
   } catch (error) {
     logger.error(`[Error] Failed to get prompt: ${error instanceof Error ? error.message : String(error)}`);
     throw new Error(`Failed to get prompt: ${error instanceof Error ? error.message : String(error)}`);
