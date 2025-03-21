@@ -1,6 +1,6 @@
-import { GraphQLClient } from "graphql-request";
+import { cacheExchange, createClient, fetchExchange, gql } from "@urql/core";
 import { logger } from "./logger.js";
-import { ListPromptsResponse, GetPromptResponse, Prompt } from "./definitions.js";
+import { ListPromptsResponse, Prompt } from "./definitions.js";
 import { LIST_PROMPTS_QUERY, GET_PROMPT_BY_NAME } from "./queries.js";
 
 // GraphQL client configuration using environment variables
@@ -23,23 +23,37 @@ if (!API_KEY) {
 logger.info(`[Config] Using API URL: ${API_URL}`);
 logger.info("[Config] API Key configured: Yes");
 
-// Create GraphQL client with API key authentication
-export const graphqlClient = new GraphQLClient(API_URL, {
-  headers: {
-    "x-api-key": API_KEY,
+// Create URQL client with API key authentication
+export const client = createClient({
+  url: API_URL,
+  fetchOptions: {
+    headers: {
+      "x-api-key": API_KEY,
+    },
   },
+  exchanges: [cacheExchange, fetchExchange],
 });
 
 // API functions
 export async function listPrompts(nextToken?: string): Promise<ListPromptsResponse> {
   try {
     logger.info("[API] Listing prompts");
-    const response = await graphqlClient.request<ListPromptsResponse>(LIST_PROMPTS_QUERY, { nextToken });
+
+    const { data, error } = await client.query(
+      gql`
+        ${LIST_PROMPTS_QUERY}
+      `,
+      { nextToken },
+    );
+
+    if (error) {
+      throw error;
+    }
 
     return {
       listPrompts: {
-        items: response.listPrompts.items.filter((p) => p.public === true),
-        nextToken: response.listPrompts.nextToken,
+        items: data.listPrompts.items.filter((p: Prompt) => p.public === true),
+        nextToken: data.listPrompts.nextToken,
       },
     };
   } catch (error) {
@@ -53,9 +67,18 @@ export async function getPromptByName(name: string): Promise<Prompt | null> {
     logger.info(`[API] Getting prompt by name: ${name}`);
 
     // Search for prompts with the exact name
-    const response = await graphqlClient.request<GetPromptResponse>(GET_PROMPT_BY_NAME, { name });
+    const { data, error } = await client.query(
+      gql`
+        ${GET_PROMPT_BY_NAME}
+      `,
+      { name },
+    );
 
-    const prompts = response.listByName.items;
+    if (error) {
+      throw error;
+    }
+
+    const prompts = data.listByName.items;
     if (prompts.length === 0) {
       return null;
     }
