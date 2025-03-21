@@ -45,6 +45,13 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
               type: "string",
               description: "Pagination token for fetching the next set of results",
             },
+            tags: {
+              type: "array",
+              items: {
+                type: "string",
+              },
+              description: "Filter prompts by tags (e.g. ['CLI', 'JavaScript'])",
+            },
           },
         },
       },

@@ -3,13 +3,15 @@ import { listPrompts, getPromptByName } from "./graphql-client.js";
 
 export async function listPromptsToolHandler(request: CallToolRequest): Promise<CallToolResult> {
   const nextToken = request.params.arguments?.nextToken as string | undefined;
-  const response = await listPrompts(nextToken);
+  const tags = request.params.arguments?.tags as string[] | undefined;
+  const response = await listPrompts(nextToken, tags);
   const prompts = response.listPrompts.items;
 
   const result = {
     prompts: prompts.map((prompt) => ({
       name: prompt.name,
       description: prompt.description,
+      tags: prompt.tags || [],
     })),
     nextCursor: response.listPrompts.nextToken || undefined,
   };

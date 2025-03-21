@@ -14,12 +14,13 @@
 
 - ✅ `list_prompts`: Lists available prompts from promptz.dev
 
-  - Returns prompt names and descriptions
+  - Returns prompt names, descriptions, and tags
   - Supports pagination with nextToken parameter
   - Filters out non-public prompts
+  - Supports filtering by tags
 
 - ✅ `get_prompt`: Retrieves a specific prompt by name
-  - Returns the full prompt instruction
+  - Returns the full prompt instruction and tags
   - Handles not found errors gracefully
 
 ### Documentation

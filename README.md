@@ -85,7 +85,7 @@ You can get these credentials from [https://promptz.dev/mcp](https://promptz.dev
 Once the server is connected to your MCP client, you can use it with natural language:
 
 - "List available prompts from promptz.dev"
-- "Search for prompts about JavaScript"
+- "Search for CLI prompts about JavaScript"
 - "Show me the prompt called 'React Component Generator'"
 
 ## Security Considerations

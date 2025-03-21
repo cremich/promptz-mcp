@@ -19,8 +19,8 @@ describe("listPromptsToolHandler", () => {
     const mockPrompts = {
       listPrompts: {
         items: [
-          { name: "prompt1", description: "desc1" },
-          { name: "prompt2", description: "desc2" },
+          { name: "prompt1", description: "desc1", tags: ["tag1"] },
+          { name: "prompt2", description: "desc2", tags: ["tag2"] },
         ],
         nextToken: null,
       },
@@ -42,8 +42,8 @@ describe("listPromptsToolHandler", () => {
           text: JSON.stringify(
             {
               prompts: [
-                { name: "prompt1", description: "desc1" },
-                { name: "prompt2", description: "desc2" },
+                { name: "prompt1", description: "desc1", tags: ["tag1"] },
+                { name: "prompt2", description: "desc2", tags: ["tag2"] },
               ],
               nextCursor: undefined,
             },
@@ -56,13 +56,13 @@ describe("listPromptsToolHandler", () => {
 
     const result = await listPromptsToolHandler(request);
     expect(result).toEqual(expected);
-    expect(listPrompts).toHaveBeenCalledWith(undefined);
+    expect(listPrompts).toHaveBeenCalledWith(undefined, undefined);
   });
 
   it("should handle nextToken correctly", async () => {
     const mockPrompts = {
       listPrompts: {
-        items: [{ name: "prompt3", description: "desc3" }],
+        items: [{ name: "prompt3", description: "desc3", tags: [] }],
         nextToken: "next-page-token",
       },
     };
@@ -80,7 +80,36 @@ describe("listPromptsToolHandler", () => {
     const result = await listPromptsToolHandler(request);
     const parsedResult = JSON.parse(result.content[0].text as string);
     expect(parsedResult.nextCursor).toBe("next-page-token");
-    expect(listPrompts).toHaveBeenCalledWith("current-token");
+    expect(listPrompts).toHaveBeenCalledWith("current-token", undefined);
+  });
+
+  it("should filter prompts by tags", async () => {
+    const mockPrompts = {
+      listPrompts: {
+        items: [
+          { name: "prompt1", description: "CLI prompt", tags: ["CLI", "JavaScript"] },
+          { name: "prompt2", description: "Web prompt", tags: ["Web", "JavaScript"] },
+        ],
+        nextToken: null,
+      },
+    };
+
+    (listPrompts as jest.Mock).mockResolvedValue(mockPrompts);
+
+    const request: CallToolRequest = {
+      method: "tools/call",
+      params: {
+        name: "listPrompts",
+        arguments: { tags: ["CLI", "JavaScript"] },
+      },
+    };
+
+    const result = await listPromptsToolHandler(request);
+    const parsedResult = JSON.parse(result.content[0].text as string);
+    expect(parsedResult.prompts).toHaveLength(2);
+    expect(parsedResult.prompts[0].tags).toContain("CLI");
+    expect(parsedResult.prompts[0].tags).toContain("JavaScript");
+    expect(listPrompts).toHaveBeenCalledWith(undefined, ["CLI", "JavaScript"]);
   });
 });
 

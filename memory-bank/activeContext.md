@@ -16,6 +16,7 @@ The server is designed to be easy to install and configure, with clear documenta
 - Added support for retrieving specific prompts by name
 - Implemented error handling and logging
 - Added documentation for installation and usage
+- Added support for filtering prompts by tags in the list_prompts tool
 
 ## Next Steps
 

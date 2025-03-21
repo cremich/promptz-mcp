@@ -35,15 +35,26 @@ export const client = createClient({
 });
 
 // API functions
-export async function listPrompts(nextToken?: string): Promise<ListPromptsResponse> {
+export async function listPrompts(nextToken?: string, tags?: string[]): Promise<ListPromptsResponse> {
   try {
-    logger.info("[API] Listing prompts");
+    logger.info("[API] Listing prompts" + (tags ? ` with tags: ${tags.join(", ")}` : ""));
+
+    // Prepare filter if tags are provided
+    let filter = undefined;
+    if (tags && tags.length > 0) {
+      // Create a filter that checks if any of the provided tags are in the prompt's tags array
+      filter = {
+        or: tags.map((tag) => ({
+          tags: { contains: tag },
+        })),
+      };
+    }
 
     const { data, error } = await client.query(
       gql`
         ${LIST_PROMPTS_QUERY}
       `,
-      { nextToken },
+      { nextToken, filter },
     );
 
     if (error) {
