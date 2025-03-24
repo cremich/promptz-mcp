@@ -22,7 +22,6 @@ const server = new Server(
   },
   {
     capabilities: {
-      prompts: {},
       tools: {},
     },
   },
@@ -102,33 +101,6 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
   }
 });
 
-/**
- * Handler that lists available prompts.
- * Exposes prompts from promptz.dev as MCP prompt templates.
- */
-server.setRequestHandler(ListPromptsRequestSchema, async (request) => {
-  try {
-    logger.info("[API] Listing available prompts");
-    return await listPromptsHandler(request);
-  } catch (error) {
-    logger.error(`[Error] Failed to list prompts: ${error instanceof Error ? error.message : String(error)}`);
-    throw new Error(`Failed to list prompts: ${error instanceof Error ? error.message : String(error)}`);
-  }
-});
-
-/**
- * Handler for retrieving a specific prompt.
- * Converts promptz.dev prompts to MCP prompt template format.
- */
-server.setRequestHandler(GetPromptRequestSchema, async (request) => {
-  try {
-    logger.info(`[API] Getting prompt: ${request.params.name}`);
-    return await getPromptHandler(request);
-  } catch (error) {
-    logger.error(`[Error] Failed to get prompt: ${error instanceof Error ? error.message : String(error)}`);
-    throw new Error(`Failed to get prompt: ${error instanceof Error ? error.message : String(error)}`);
-  }
-});
 /**
  * Start the server using stdio transport.
  * This allows the server to communicate via standard input/output streams.

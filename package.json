@@ -1,6 +1,6 @@
 {
   "name": "@promptz/mcp",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "MCP server to give developers access to prompts from promptz.dev",
   "type": "module",
   "author": "Christian Bonzelet",
