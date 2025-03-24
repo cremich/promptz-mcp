@@ -1,6 +1,6 @@
 {
   "name": "@promptz/mcp",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "MCP server to give developers access to prompts from promptz.dev",
   "type": "module",
   "author": "Christian Bonzelet",
@@ -17,7 +17,7 @@
   },
   "scripts": {
     "build": "tsc && chmod 755 build/index.js",
-    "prepare": "husky",
+    "prepare": "npm run build",
     "watch": "tsc --watch",
     "inspector": "npx @modelcontextprotocol/inspector build/index.js",
     "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,css,md}\"",
