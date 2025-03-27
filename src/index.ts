@@ -4,7 +4,7 @@ import { logger } from "./logger.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { CallToolRequestSchema, ListToolsRequestSchema } from "@modelcontextprotocol/sdk/types.js";
 
-import { getPromptToolHandler, listPromptsToolHandler } from "./tools.js";
+import { getPromptToolHandler, getRuleToolHandler, listPromptsToolHandler, listRulesToolHandler } from "./tools.js";
 
 /**
  * Create an MCP server with prompts capability for interacting with promptz.dev API
@@ -12,7 +12,7 @@ import { getPromptToolHandler, listPromptsToolHandler } from "./tools.js";
 const server = new Server(
   {
     name: "promptz.dev",
-    version: "1.0.4",
+    version: "1.1.0",
   },
   {
     capabilities: {
@@ -61,6 +61,39 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
           },
         },
       },
+      {
+        name: "list_rules",
+        description: "List available project rules from promptz.dev",
+        inputSchema: {
+          type: "object",
+          properties: {
+            cursor: {
+              type: "string",
+              description: "Pagination token for fetching the next set of results",
+            },
+            tags: {
+              type: "array",
+              items: {
+                type: "string",
+              },
+              description: "Filter rules by tags (e.g. ['CDK', 'React'])",
+            },
+          },
+        },
+      },
+      {
+        name: "get_rule",
+        description: "Get a specific project rule by name",
+        inputSchema: {
+          type: "object",
+          properties: {
+            name: {
+              type: "string",
+              description: "Name of the rule to retrieve",
+            },
+          },
+        },
+      },
     ],
   };
 });
@@ -77,6 +110,12 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       }
       case "get_prompt": {
         return await getPromptToolHandler(request);
+      }
+      case "list_rules": {
+        return await listRulesToolHandler(request);
+      }
+      case "get_rule": {
+        return await getRuleToolHandler(request);
       }
       default:
         throw new Error("Unknown tool");

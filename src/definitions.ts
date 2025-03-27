@@ -13,6 +13,19 @@ export interface Prompt {
   updatedAt?: string;
 }
 
+export type ProjectRule = {
+  id?: string;
+  name: string;
+  description: string;
+  tags?: string[];
+  content: string;
+  owner_username?: string;
+  public?: boolean;
+  sourceURL?: string;
+  createdAt?: string;
+  updatedAt?: string;
+};
+
 export interface ListPromptsResponse {
   listPrompts: {
     items: Prompt[];
@@ -22,6 +35,19 @@ export interface ListPromptsResponse {
 
 export interface GetPromptResponse {
   listByName: {
+    items: Prompt[];
+  };
+}
+
+export interface ListRulesResponse {
+  listProjectRules: {
+    items: ProjectRule[];
+    nextToken?: string;
+  };
+}
+
+export interface GetRuleResponse {
+  listRuleByName: {
     items: Prompt[];
   };
 }
