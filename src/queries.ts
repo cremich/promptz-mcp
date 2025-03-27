@@ -8,6 +8,7 @@ export const LIST_PROMPTS_QUERY = `
         instruction
         tags
         public
+        owner_username
       }
       nextToken
     }
@@ -22,6 +23,8 @@ export const GET_PROMPT_BY_NAME = `
         description
         instruction
         tags
+        howto
+        owner_username
       }
     }
   }

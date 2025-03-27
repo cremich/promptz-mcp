@@ -12,6 +12,7 @@ export async function listPromptsToolHandler(request: CallToolRequest): Promise<
       name: prompt.name,
       description: prompt.description,
       tags: prompt.tags || [],
+      author: prompt.owner_username,
     })),
     nextCursor: response.listPrompts.nextToken || undefined,
   };
@@ -36,11 +37,21 @@ export async function getPromptToolHandler(request: CallToolRequest): Promise<Ca
   if (!prompt) {
     throw new Error(`Prompt not found: ${name}`);
   }
+
+  const promptData = {
+    name: prompt.name,
+    description: prompt.description,
+    tags: prompt.tags || [],
+    author: prompt.owner_username,
+    instruction: prompt.instruction,
+    howto: prompt.howto || "",
+  };
+
   return {
     content: [
       {
         type: "text",
-        text: JSON.stringify(prompt, null, 2),
+        text: JSON.stringify(promptData, null, 2),
       },
     ],
   };

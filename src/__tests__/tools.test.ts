@@ -87,8 +87,8 @@ describe("listPromptsToolHandler", () => {
     const mockPrompts = {
       listPrompts: {
         items: [
-          { name: "prompt1", description: "CLI prompt", tags: ["CLI", "JavaScript"] },
-          { name: "prompt2", description: "Web prompt", tags: ["Web", "JavaScript"] },
+          { name: "prompt1", description: "CLI prompt", tags: ["CLI", "JavaScript"], owner_username: "owner" },
+          { name: "prompt2", description: "Web prompt", tags: ["Web", "JavaScript"], owner_username: "owner" },
         ],
         nextToken: null,
       },
@@ -109,6 +109,8 @@ describe("listPromptsToolHandler", () => {
     expect(parsedResult.prompts).toHaveLength(2);
     expect(parsedResult.prompts[0].tags).toContain("CLI");
     expect(parsedResult.prompts[0].tags).toContain("JavaScript");
+    expect(parsedResult.prompts[0].description).toContain("CLI prompt");
+    expect(parsedResult.prompts[0].author).toContain("owner");
     expect(listPrompts).toHaveBeenCalledWith(undefined, ["CLI", "JavaScript"]);
   });
 });
@@ -122,6 +124,9 @@ describe("getPromptToolHandler", () => {
     const mockPrompt = {
       name: "testPrompt",
       description: "test description",
+      tags: ["tag1", "tag2"],
+      howto: "howto",
+      owner_username: "author",
     };
 
     (getPromptByName as jest.Mock).mockResolvedValue(mockPrompt);
@@ -134,11 +139,19 @@ describe("getPromptToolHandler", () => {
       },
     };
 
+    const expectedPromptData = {
+      name: "testPrompt",
+      description: "test description",
+      tags: ["tag1", "tag2"],
+      author: "author",
+      howto: "howto",
+    };
+
     const expected: CallToolResult = {
       content: [
         {
           type: "text",
-          text: JSON.stringify(mockPrompt, null, 2),
+          text: JSON.stringify(expectedPromptData, null, 2),
         },
       ],
     };

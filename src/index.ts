@@ -2,15 +2,9 @@
 import { Server } from "@modelcontextprotocol/sdk/server/index.js";
 import { logger } from "./logger.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
-import {
-  CallToolRequestSchema,
-  GetPromptRequestSchema,
-  ListPromptsRequestSchema,
-  ListToolsRequestSchema,
-} from "@modelcontextprotocol/sdk/types.js";
+import { CallToolRequestSchema, ListToolsRequestSchema } from "@modelcontextprotocol/sdk/types.js";
 
 import { getPromptToolHandler, listPromptsToolHandler } from "./tools.js";
-import { getPromptHandler, listPromptsHandler } from "./prompts.js";
 
 /**
  * Create an MCP server with prompts capability for interacting with promptz.dev API
@@ -18,7 +12,7 @@ import { getPromptHandler, listPromptsHandler } from "./prompts.js";
 const server = new Server(
   {
     name: "promptz.dev",
-    version: "0.1.0",
+    version: "1.0.4",
   },
   {
     capabilities: {
