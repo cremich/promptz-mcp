@@ -1,0 +1,31 @@
+# Smithery configuration file: https://smithery.ai/docs/config#smitheryyaml
+
+startCommand:
+  type: stdio
+  configSchema:
+    # JSON Schema defining the configuration options for the MCP.
+    type: object
+    required:
+      - promptzApiUrl
+      - promptzApiKey
+    properties:
+      promptzApiUrl:
+        type: string
+        description: The API URL for promptz.dev
+      promptzApiKey:
+        type: string
+        description: The API key for promptz.dev
+  commandFunction:
+    # A JS function that produces the CLI command based on the given config to start the MCP on stdio.
+    |-
+    (config) => ({
+      command: 'node',
+      args: ['build/index.js'],
+      env: {
+        PROMPTZ_API_URL: config.promptzApiUrl,
+        PROMPTZ_API_KEY: config.promptzApiKey
+      }
+    })
+  exampleConfig:
+    promptzApiUrl: https://api.promptz.dev
+    promptzApiKey: dummy-api-key
