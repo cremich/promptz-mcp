@@ -1,5 +1,7 @@
 # promptz.dev MCP Server
 
+[![smithery badge](https://smithery.ai/badge/@cremich/promptz-mcp)](https://smithery.ai/server/@cremich/promptz-mcp)
+
 Access prompts from promptz.dev directly from your AI assistants.
 
 This MCP server allows to access prompts from the promptz.dev API without copy-pasting, reducing context switching and friction in your development workflow.
@@ -115,6 +117,14 @@ The server also implements the MCP Prompts capability, which allows AI assistant
 - **Get Prompt**: Returns a specific prompt as an MCP prompt template that can be directly used by the AI assistant
 
 ## Installation
+
+### Installing via Smithery
+
+To install promptz.dev MCP Server for Claude Desktop automatically via [Smithery](https://smithery.ai/server/@cremich/promptz-mcp):
+
+```bash
+npx -y @smithery/cli install @cremich/promptz-mcp --client claude
+```
 
 ### Step 1: Get API Credentials
 
