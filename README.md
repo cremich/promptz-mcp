@@ -1,6 +1,6 @@
 # promptz.dev MCP Server
 
-Access prompts from promptz.dev directly from your AI assistants.
+Access prompts from promptz.dev directly within Amazon Q Developer.
 
 This MCP server allows to access prompts from the promptz.dev API without copy-pasting, reducing context switching and friction in your development workflow.
 
@@ -8,111 +8,18 @@ This MCP server allows to access prompts from the promptz.dev API without copy-p
 
 The promptz.dev MCP Server provides two main capabilities:
 
-1. **Tools** - Executable functions that allow AI assistants to interact with the promptz.dev API
-2. **Prompts** - Direct access to prompts as MCP prompt templates
+1. **Prompts** - Executable functions to search and execute prompts.
+2. **Rules** - Executable functions to search for project rules and by integrating with other tools adding/updating them in your workspace.
 
-## Tools and Prompts API
+## Example Usage
 
-### Tools
+Once the server is connected to Amazon Q Developer, you can use it with natural language like:
 
-The server exposes the following tools through the MCP protocol:
-
-#### `list_prompts`
-
-Lists available prompts from the promptz.dev platform.
-
-**Input Schema:**
-
-```json
-{
-  "type": "object",
-  "properties": {
-    "cursor": {
-      "type": "string",
-      "description": "Pagination token for fetching the next set of results"
-    },
-    "tags": {
-      "type": "array",
-      "items": {
-        "type": "string"
-      },
-      "description": "Filter prompts by tags (e.g. ['CLI', 'JavaScript'])"
-    }
-  }
-}
-```
-
-**Example Usage:**
-
-```
-// List all prompts
-list_prompts()
-
-// List prompts with pagination
-list_prompts({ "cursor": "next-page-token" })
-
-// Filter prompts by tags
-list_prompts({ "tags": ["JavaScript", "CLI"] })
-```
-
-**Response Format:**
-
-```json
-{
-  "prompts": [
-    {
-      "name": "React Component Generator",
-      "description": "Generates React components based on specifications",
-      "tags": ["React", "JavaScript", "Frontend"]
-    }
-    // More prompts...
-  ],
-  "nextCursor": "optional-pagination-token"
-}
-```
-
-#### `get_prompt`
-
-Retrieves a specific prompt by name.
-
-**Input Schema:**
-
-```json
-{
-  "type": "object",
-  "properties": {
-    "name": {
-      "type": "string",
-      "description": "Name of the prompt to retrieve"
-    }
-  },
-  "required": ["name"]
-}
-```
-
-**Example Usage:**
-
-```
-get_prompt({ "name": "React Component Generator" })
-```
-
-**Response Format:**
-
-```json
-{
-  "name": "React Component Generator",
-  "description": "Generates React components based on specifications",
-  "instruction": "Create a React component that...",
-  "tags": ["React", "JavaScript", "Frontend"]
-}
-```
-
-### Prompts API
-
-The server also implements the MCP Prompts capability, which allows AI assistants to directly access prompts as templates:
-
-- **List Prompts**: Returns available prompts in MCP prompt template format
-- **Get Prompt**: Returns a specific prompt as an MCP prompt template that can be directly used by the AI assistant
+- "Search for CLI prompts about JavaScript"
+- "Show me the prompt called 'React Component Documentation'"
+- "Use the React Component Documentation prompt to improve my documentation"
+- "Find project rules for CDK Development"
+- "Add the CDK Project Structure project rule to my workspace"
 
 ## Installation
 
@@ -123,11 +30,13 @@ The server also implements the MCP Prompts capability, which allows AI assistant
 
 ### Step 2: Install the MCP Server
 
+Open the Amazon Q Developer MCP client settings file located at `~/.aws/amazonq/mcp.json`
+
 #### Option 1: Using npx (Recommended)
 
 The easiest way to use the server is with npx, which doesn't require installation:
 
-1. Add the following configuration to your MCP client's settings file:
+1. Add the following configuration to your Amazon Q Developer MCP client's settings file:
 
 ```json
 {
@@ -181,45 +90,13 @@ npm run build
 }
 ```
 
-### Step 3: Configure Your MCP Client
-
-#### Claude Desktop
-
-Add the server configuration to the Claude Desktop config file:
-
-- **MacOS**: `~/Library/Application Support/Claude/claude_desktop_config.json`
-- **Windows**: `%APPDATA%/Claude/claude_desktop_config.json`
-
-If the file doesn't exist, create it with the following content:
-
-```json
-{
-  "mcpServers": {
-    "promptz.dev": {
-      "command": "npx",
-      "args": ["-y", "@promptz/mcp"],
-      "env": {
-        "PROMPTZ_API_URL": "your-api-url-from-promptz.dev",
-        "PROMPTZ_API_KEY": "your-api-key-from-promptz.dev"
-      },
-      "disabled": false,
-      "autoApprove": []
-    }
-  }
-}
-```
-
-#### Other MCP Clients
-
-For other MCP clients, refer to their documentation for how to configure MCP servers.
-
 ### Troubleshooting
 
 If you encounter issues with the server:
 
 1. Check that your API credentials are correct
 2. Ensure the server is properly configured in your MCP client
-3. Look for error messages in the logs
+3. Look for error messages in the logs located ad `~/.promptz/logs/mcp-server.log`
 4. Use the MCP Inspector for debugging:
 
 ```bash
@@ -246,15 +123,6 @@ npm run watch
 # Run tests
 npm test
 ```
-
-## Example Usage
-
-Once the server is connected to your MCP client, you can use it with natural language:
-
-- "List available prompts from promptz.dev"
-- "Search for CLI prompts about JavaScript"
-- "Show me the prompt called 'React Component Documentation'"
-- "Use the React Component Documentation prompt to improve my documentation"
 
 ## Security Considerations
 
