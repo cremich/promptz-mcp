@@ -1,14 +1,15 @@
 // GraphQL queries
-export const LIST_PROMPTS_QUERY = `
-  query ListPrompts($nextToken: String, $filter: ModelPromptFilterInput) {
-    listPrompts(nextToken: $nextToken, filter: $filter) {
-      items {
-        name
+export const SEARCH_PROMPTS_QUERY = `
+  query SearchPrompts($nextToken: String, $tags: [String]) {
+    searchPrompts(tags: $tags, nextToken: $nextToken) {
+      results {
+        createdAt
         description
-        instruction
+        id
+        name
+        slug
         tags
-        public
-        owner_username
+        updatedAt
       }
       nextToken
     }
