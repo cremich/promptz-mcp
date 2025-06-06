@@ -1,3 +1,5 @@
+[![MseeP.ai Security Assessment Badge](https://mseep.net/pr/cremich-promptz-mcp-badge.png)](https://mseep.ai/app/cremich-promptz-mcp)
+
 # promptz.dev MCP Server
 
 Access prompts from promptz.dev directly within Amazon Q Developer.
