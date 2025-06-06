@@ -1,20 +1,20 @@
 import { CallToolRequest, CallToolResult } from "@modelcontextprotocol/sdk/types.js";
-import { listPrompts, getPromptByName, listRules, getRuleByName } from "./graphql-client.js";
+import { searchPrompts, getPromptByName, listRules, getRuleByName } from "./graphql-client.js";
 
 export async function listPromptsToolHandler(request: CallToolRequest): Promise<CallToolResult> {
   const nextToken = request.params.arguments?.nextToken as string | undefined;
   const tags = request.params.arguments?.tags as string[] | undefined;
-  const response = await listPrompts(nextToken, tags);
-  const prompts = response.listPrompts.items;
+  const response = await searchPrompts(nextToken, tags);
+  const prompts = response.searchPrompts.results;
 
   const result = {
     prompts: prompts.map((prompt) => ({
       name: prompt.name,
       description: prompt.description,
       tags: prompt.tags || [],
-      author: prompt.owner_username,
+      author: prompt.author,
     })),
-    nextCursor: response.listPrompts.nextToken || undefined,
+    nextCursor: response.searchPrompts.nextToken || undefined,
   };
 
   return {
@@ -42,7 +42,7 @@ export async function getPromptToolHandler(request: CallToolRequest): Promise<Ca
     name: prompt.name,
     description: prompt.description,
     tags: prompt.tags || [],
-    author: prompt.owner_username,
+    author: prompt.author?.displayName,
     instruction: prompt.instruction,
     howto: prompt.howto || "",
   };
@@ -61,16 +61,15 @@ export async function listRulesToolHandler(request: CallToolRequest): Promise<Ca
   const nextToken = request.params.arguments?.nextToken as string | undefined;
   const tags = request.params.arguments?.tags as string[] | undefined;
   const response = await listRules(nextToken, tags);
-  const rules = response.listProjectRules.items;
+  const rules = response.searchProjectRules.results;
 
   const result = {
     rules: rules.map((rule) => ({
       name: rule.name,
       description: rule.description,
       tags: rule.tags || [],
-      author: rule.owner_username,
     })),
-    nextCursor: response.listProjectRules.nextToken || undefined,
+    nextCursor: response.searchProjectRules.nextToken || undefined,
   };
 
   return {
@@ -98,7 +97,7 @@ export async function getRuleToolHandler(request: CallToolRequest): Promise<Call
     name: rule.name,
     description: rule.description,
     tags: rule.tags || [],
-    author: rule.owner_username,
+    author: rule.author?.displayName,
     content: rule.content,
   };
 

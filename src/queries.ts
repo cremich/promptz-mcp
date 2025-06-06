@@ -1,14 +1,15 @@
 // GraphQL queries
-export const LIST_PROMPTS_QUERY = `
-  query ListPrompts($nextToken: String, $filter: ModelPromptFilterInput) {
-    listPrompts(nextToken: $nextToken, filter: $filter) {
-      items {
-        name
+export const SEARCH_PROMPTS_QUERY = `
+  query SearchPrompts($nextToken: String, $tags: [String]) {
+    searchPrompts(tags: $tags, nextToken: $nextToken) {
+      results {
+        createdAt
         description
-        instruction
+        id
+        name
+        slug
         tags
-        public
-        owner_username
+        updatedAt
       }
       nextToken
     }
@@ -24,22 +25,25 @@ export const GET_PROMPT_BY_NAME = `
         instruction
         tags
         howto
-        owner_username
+        author {
+          displayName
+        }
       }
     }
   }
 `;
 
-export const LIST_RULES_QUERY = `
-  query ListRules($nextToken: String, $filter: ModelProjectRuleFilterInput) {
-    listProjectRules(nextToken: $nextToken, filter: $filter) {
-      items {
-        name
+export const SEARCH_RULES = `
+  query SearchRules($nextToken: String, $tags: [String]) {
+    searchProjectRules(nextToken: $nextToken, tags: $tags) {
+      results {
+        createdAt
         description
-        content
+        id
+        name
+        slug
         tags
-        public
-        owner_username
+        updatedAt
       }
       nextToken
     }
@@ -54,8 +58,9 @@ export const GET_RULE_BY_NAME = `
         description
         content
         tags
-        public
-        owner_username
+        author {
+          displayName
+        }      
       }
     }
   }

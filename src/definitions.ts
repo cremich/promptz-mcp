@@ -8,7 +8,9 @@ export interface Prompt {
   sourceURL?: string;
   howto?: string;
   public?: boolean;
-  owner_username?: string;
+  author?: {
+    displayName: string;
+  };
   createdAt?: string;
   updatedAt?: string;
 }
@@ -19,16 +21,18 @@ export type ProjectRule = {
   description: string;
   tags?: string[];
   content: string;
-  owner_username?: string;
+  author?: {
+    displayName: string;
+  };
   public?: boolean;
   sourceURL?: string;
   createdAt?: string;
   updatedAt?: string;
 };
 
-export interface ListPromptsResponse {
-  listPrompts: {
-    items: Prompt[];
+export interface SearchPromptsResponse {
+  searchPrompts: {
+    results: Prompt[];
     nextToken?: string;
   };
 }
@@ -40,8 +44,8 @@ export interface GetPromptResponse {
 }
 
 export interface ListRulesResponse {
-  listProjectRules: {
-    items: ProjectRule[];
+  searchProjectRules: {
+    results: ProjectRule[];
     nextToken?: string;
   };
 }
