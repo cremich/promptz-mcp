@@ -1,5 +1,6 @@
 import { CallToolRequest, CallToolResult } from "@modelcontextprotocol/sdk/types.js";
 import { getPromptToolHandler, listPromptsToolHandler, listRulesToolHandler, getRuleToolHandler } from "../tools.js";
+import { getPromptByName, searchPrompts, listRules, getRuleByName } from "../graphql-client.js";
 
 // Mock the graphql-client module
 jest.mock("../graphql-client.js", () => ({
@@ -8,9 +9,6 @@ jest.mock("../graphql-client.js", () => ({
   listRules: jest.fn(),
   getRuleByName: jest.fn(),
 }));
-
-// Import after mocking
-import { getPromptByName, searchPrompts, listRules, getRuleByName } from "../graphql-client.js";
 
 describe("listPromptsToolHandler", () => {
   beforeEach(() => {
@@ -196,10 +194,10 @@ describe("listRulesToolHandler", () => {
 
   it("should return formatted rules without nextToken", async () => {
     const mockRules = {
-      listProjectRules: {
-        items: [
-          { name: "rule1", description: "desc1", tags: ["tag1"], owner_username: "owner1" },
-          { name: "rule2", description: "desc2", tags: ["tag2"], owner_username: "owner2" },
+      searchProjectRules: {
+        results: [
+          { name: "rule1", description: "desc1", tags: ["tag1"] },
+          { name: "rule2", description: "desc2", tags: ["tag2"] },
         ],
         nextToken: null,
       },
@@ -221,8 +219,8 @@ describe("listRulesToolHandler", () => {
           text: JSON.stringify(
             {
               rules: [
-                { name: "rule1", description: "desc1", tags: ["tag1"], author: "owner1" },
-                { name: "rule2", description: "desc2", tags: ["tag2"], author: "owner2" },
+                { name: "rule1", description: "desc1", tags: ["tag1"] },
+                { name: "rule2", description: "desc2", tags: ["tag2"] },
               ],
               nextCursor: undefined,
             },
@@ -240,8 +238,8 @@ describe("listRulesToolHandler", () => {
 
   it("should handle nextToken correctly", async () => {
     const mockRules = {
-      listProjectRules: {
-        items: [{ name: "rule3", description: "desc3", tags: [], owner_username: "owner3" }],
+      searchProjectRules: {
+        results: [{ name: "rule3", description: "desc3", tags: [] }],
         nextToken: "next-page-token",
       },
     };
@@ -264,10 +262,10 @@ describe("listRulesToolHandler", () => {
 
   it("should filter rules by tags", async () => {
     const mockRules = {
-      listProjectRules: {
-        items: [
-          { name: "rule1", description: "AWS rule", tags: ["AWS", "Security"], owner_username: "owner1" },
-          { name: "rule2", description: "Security rule", tags: ["Security", "Compliance"], owner_username: "owner2" },
+      searchProjectRules: {
+        results: [
+          { name: "rule1", description: "AWS rule", tags: ["AWS", "Security"] },
+          { name: "rule2", description: "Security rule", tags: ["Security", "Compliance"] },
         ],
         nextToken: null,
       },

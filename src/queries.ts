@@ -31,16 +31,17 @@ export const GET_PROMPT_BY_NAME = `
   }
 `;
 
-export const LIST_RULES_QUERY = `
-  query ListRules($nextToken: String, $filter: ModelProjectRuleFilterInput) {
-    listProjectRules(nextToken: $nextToken, filter: $filter) {
-      items {
-        name
+export const SEARCH_RULES = `
+  query SearchRules($nextToken: String, $tags: [String]) {
+    searchProjectRules(nextToken: $nextToken, tags: $tags) {
+      results {
+        createdAt
         description
-        content
+        id
+        name
+        slug
         tags
-        public
-        owner_username
+        updatedAt
       }
       nextToken
     }

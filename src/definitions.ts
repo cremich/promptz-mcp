@@ -40,8 +40,8 @@ export interface GetPromptResponse {
 }
 
 export interface ListRulesResponse {
-  listProjectRules: {
-    items: ProjectRule[];
+  searchProjectRules: {
+    results: ProjectRule[];
     nextToken?: string;
   };
 }

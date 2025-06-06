@@ -61,16 +61,15 @@ export async function listRulesToolHandler(request: CallToolRequest): Promise<Ca
   const nextToken = request.params.arguments?.nextToken as string | undefined;
   const tags = request.params.arguments?.tags as string[] | undefined;
   const response = await listRules(nextToken, tags);
-  const rules = response.listProjectRules.items;
+  const rules = response.searchProjectRules.results;
 
   const result = {
     rules: rules.map((rule) => ({
       name: rule.name,
       description: rule.description,
       tags: rule.tags || [],
-      author: rule.owner_username,
     })),
-    nextCursor: response.listProjectRules.nextToken || undefined,
+    nextCursor: response.searchProjectRules.nextToken || undefined,
   };
 
   return {

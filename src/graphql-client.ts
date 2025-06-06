@@ -1,7 +1,7 @@
 import { cacheExchange, createClient, fetchExchange, gql } from "@urql/core";
 import { logger } from "./logger.js";
 import { SearchPromptsResponse, ListRulesResponse, ProjectRule, Prompt } from "./definitions.js";
-import { SEARCH_PROMPTS_QUERY, GET_PROMPT_BY_NAME, LIST_RULES_QUERY, GET_RULE_BY_NAME } from "./queries.js";
+import { SEARCH_PROMPTS_QUERY, GET_PROMPT_BY_NAME, SEARCH_RULES, GET_RULE_BY_NAME } from "./queries.js";
 
 // GraphQL client configuration using environment variables
 const API_URL = process.env.PROMPTZ_API_URL;
@@ -101,34 +101,18 @@ export async function listRules(nextToken?: string, tags?: string[]): Promise<Li
   try {
     logger.info("[API] Listing rules" + (tags ? ` with tags: ${tags.join(", ")}` : ""));
 
-    // Prepare filter if tags are provided
-    let filter = undefined;
-    if (tags && tags.length > 0) {
-      // Create a filter that checks if any of the provided tags are in the prompt's tags array
-      filter = {
-        or: tags.map((tag) => ({
-          tags: { contains: tag },
-        })),
-      };
-    }
-
     const { data, error } = await client.query(
       gql`
-        ${LIST_RULES_QUERY}
+        ${SEARCH_RULES}
       `,
-      { nextToken, filter },
+      { nextToken, tags },
     );
 
     if (error) {
       throw error;
     }
 
-    return {
-      listProjectRules: {
-        items: data.listProjectRules.items.filter((r: ProjectRule) => r.public === true),
-        nextToken: data.listProjectRules.nextToken,
-      },
-    };
+    return data;
   } catch (error) {
     logger.error(`[Error] Failed to list project rules: ${error instanceof Error ? error.message : String(error)}`);
     throw new Error(`Failed to list project rules: ${error instanceof Error ? error.message : String(error)}`);
