@@ -80,17 +80,7 @@ export async function getPromptByName(name: string): Promise<Prompt | null> {
 
     let prompt = prompts[0];
 
-    return {
-      id: prompt.id,
-      name: prompt.name,
-      description: prompt.description,
-      tags: prompt.tags,
-      instruction: prompt.instruction,
-      sourceURL: prompt.sourceURL,
-      howto: prompt.howto,
-      public: prompt.public,
-      author: prompt.author.displayName,
-    };
+    return prompt;
   } catch (error) {
     logger.error(`[Error] Failed to get prompt by name: ${error instanceof Error ? error.message : String(error)}`);
     throw new Error(`Failed to get prompt by name: ${error instanceof Error ? error.message : String(error)}`);

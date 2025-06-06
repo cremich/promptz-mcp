@@ -125,7 +125,7 @@ describe("getPromptToolHandler", () => {
       description: "test description",
       tags: ["tag1", "tag2"],
       howto: "howto",
-      author: "author",
+      author: { displayName: "author" },
     };
 
     (getPromptByName as jest.Mock).mockResolvedValue(mockPrompt);
@@ -301,7 +301,7 @@ describe("getRuleToolHandler", () => {
       description: "test rule description",
       tags: ["AWS", "Security"],
       content: "This is a rule content",
-      owner_username: "author",
+      author: { displayName: "author" },
     };
 
     (getRuleByName as jest.Mock).mockResolvedValue(mockRule);

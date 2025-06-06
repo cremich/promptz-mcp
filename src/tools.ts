@@ -42,7 +42,7 @@ export async function getPromptToolHandler(request: CallToolRequest): Promise<Ca
     name: prompt.name,
     description: prompt.description,
     tags: prompt.tags || [],
-    author: prompt.author,
+    author: prompt.author?.displayName,
     instruction: prompt.instruction,
     howto: prompt.howto || "",
   };
@@ -97,7 +97,7 @@ export async function getRuleToolHandler(request: CallToolRequest): Promise<Call
     name: rule.name,
     description: rule.description,
     tags: rule.tags || [],
-    author: rule.owner_username,
+    author: rule.author?.displayName,
     content: rule.content,
   };
 

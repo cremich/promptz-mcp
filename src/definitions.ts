@@ -8,7 +8,9 @@ export interface Prompt {
   sourceURL?: string;
   howto?: string;
   public?: boolean;
-  author?: string;
+  author?: {
+    displayName: string;
+  };
   createdAt?: string;
   updatedAt?: string;
 }
@@ -19,7 +21,9 @@ export type ProjectRule = {
   description: string;
   tags?: string[];
   content: string;
-  owner_username?: string;
+  author?: {
+    displayName: string;
+  };
   public?: boolean;
   sourceURL?: string;
   createdAt?: string;

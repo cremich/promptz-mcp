@@ -25,7 +25,9 @@ export const GET_PROMPT_BY_NAME = `
         instruction
         tags
         howto
-        owner_username
+        author {
+          displayName
+        }
       }
     }
   }
@@ -56,8 +58,9 @@ export const GET_RULE_BY_NAME = `
         description
         content
         tags
-        public
-        owner_username
+        author {
+          displayName
+        }      
       }
     }
   }
